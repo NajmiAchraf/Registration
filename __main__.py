@@ -14,7 +14,7 @@ btn_prm = {'padx': 16,
 
 class Registration:
     __author__ = 'Achraf Najmi'
-    __version__ = '1.0.0.1 GM'
+    __version__ = '1.0.0.2 FV'
     __name__ = 'Registration'
 
     def __init__(self):
@@ -45,7 +45,7 @@ class Registration:
         self.CBV = StringVar()
         cb2 = Checkbutton(self.FM[0], text='Disable')
         cb2.grid(row=2, column=2, sticky='snew', padx=5, pady=5)
-        cb2.config(variable=self.CBV, command=lambda: self.cb())
+        cb2.config(variable=self.CBV, command=lambda: self.cb(2))
         self.CBV.get()
         self.k1 = self.CBV.get()
 
@@ -56,19 +56,19 @@ class Registration:
             LLA[l].grid(row=l, column=0, sticky='snew', padx=5, pady=5)
 
         self.RBV = StringVar()
-        RBF_TX = ['Mr.', 'Mme.', 'Mlle.']
+        RBF_TX0 = ['Male', 'Female']
         RBF = []
-        for r in range(3):
-            RBF.append(Radiobutton(self.FM[1], variable=self.RBV, value=RBF_TX[r], text=RBF_TX[r]))
+        for r in range(2):
+            RBF.append(Radiobutton(self.FM[1], variable=self.RBV, value=RBF_TX0[r], text=RBF_TX0[r]))
             RBF[r].grid(row=0, column=int(r) + 1, sticky='snew', padx=5, pady=5)
         self.RBV.get()
         self.k2 = self.RBV.get()
 
         self.RBV1 = StringVar()
-        RBF_TX = ['One Month', 'Three Month', 'Six Months']
+        RBF_TX1 = ['One Month', 'Three Month', 'Six Months']
         RBF = []
         for a in range(3):
-            RBF.append(Radiobutton(self.FM[1], variable=self.RBV1, value=RBF_TX[a], text=RBF_TX[a]))
+            RBF.append(Radiobutton(self.FM[1], variable=self.RBV1, value=RBF_TX1[a], text=RBF_TX1[a]))
             RBF[a].grid(row=1, column=int(a) + 1, sticky='snew', padx=5, pady=5)
         self.RBV1.get()
         self.k3 = self.RBV1.get()
@@ -97,55 +97,55 @@ class Registration:
         self.root.columnconfigure(0, weight=1, minsize=1)
         self.root.mainloop()
 
-    def cb(self):
+    def cb(self, nbr):
         self.k1 = self.CBV.get()
         if self.k1 == '1':
-            self.EN[2].delete(0, END)
-            self.EN[2].config(state=DISABLED)
+            self.EN[nbr].delete(0, END)
+            self.EN[nbr].config(state=DISABLED)
             self.c = 'N/D'
         else:
-            self.EN[2].config(state=NORMAL)
-            self.c = self.EN[2].get().upper()
+            self.EN[nbr].config(state=NORMAL)
+            self.c = self.EN[nbr].get().upper()
+        return self.c
+
+    def get_upper(self, nbr):
+        if nbr == 2:
+            return self.cb(nbr)
+        elif nbr == 4 or nbr == 5:
+            return self.EN[nbr].get().lower()
+        else:
+            return self.EN[nbr].get().upper()
 
     def GET(self):
         file = open('../inscription.txt', 'a')
         file.write('\n------------------------------------------')
 
+        what_set = ["First Name", "Last Name", "Middle Name", "Address", "E.Mail", "Phone"]
+        for tr in range(6):
+            file.write(f'\n{what_set[tr]} : {self.get_upper(tr)}')
+            print(f'{what_set[tr]} : {self.get_upper(tr)}')
+
+
         a = self.EN[0].get().upper()
-        file.write('\nFirst Name : {}'.format(a))
-        print('First Name : {}'.format(a))
-
+#
         b = self.EN[1].get().upper()
-        file.write('\nLast Name : {}'.format(b))
-        print('Last Name : {}'.format(b))
-
-        self.cb()
-        file.write('\nMiddle Name : {}'.format(self.c))
-        print('Middle Name : {}'.format(self.c))
-
+#
         d = self.EN[3].get().upper()
-        file.write('\nAddress : {}'.format(d))
-        print('Address : {}'.format(d))
-
+#
         e = self.EN[4].get().lower()
-        file.write('\nE.Mail : {}'.format(e))
-        print('E.Mail : {}'.format(e))
-
+#
         f = self.EN[5].get()
-        file.write('\nPhone : {}'.format(f))
-        print('Phone : {}'.format(f))
-
         self.k2 = self.RBV.get()
         self.k3 = self.RBV1.get()
 
-        self.CMT.insert(1.0, '{}{} {} payed for {}, '.format(self.k2, a, b, self.k3))
+        self.CMT.insert(1.0, '{}{} {} {} payed for {}.'.format(self.k2, a, self.c, b, self.k3))
         t = self.CMT.get(1.0, END)
         file.write('\nComment : {}'.format(t))
         print('Comment : {}'.format(t))
 
         file.write('\n')
-        file.write('\n{}{} {} payed for {}.'.format(self.k2, a, b, self.k3))
-        print('{}{} {} payed for {}.'.format(self.k2, a, b, self.k3))
+        file.write('\n{}{} {} {} payed for {}.'.format(self.k2, a, self.c, b, self.k3))
+        print('{}{} {} {} payed for {}.'.format(self.k2, a, self.c, b, self.k3))
 
         file.close()
 
